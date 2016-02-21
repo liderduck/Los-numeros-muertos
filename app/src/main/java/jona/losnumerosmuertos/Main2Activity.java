@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class Main2Activity extends AppCompatActivity {
@@ -42,9 +43,9 @@ public class Main2Activity extends AppCompatActivity {
         int max = 99;
 
         Random r = new Random();
-     //   numAAdiv = r.nextInt(max - min + 1) + min;
-        numAAdiv=99;
+        numAAdiv = r.nextInt(max - min + 1) + min;
         numAdiv = String.valueOf(numAAdiv);
+        Log.i("hola","numero"+numAdiv);
     }
     public void empJugar(View v){
         t5 = (TextView) findViewById(R.id.textView5);
@@ -55,19 +56,41 @@ public class Main2Activity extends AppCompatActivity {
         jugar(numAdiv, numPos, numIntentos);
     }
 
+
     public void jugar(String numAAdiv,String numPos,Integer numIntentos){
         int numMuertos=0;
         int numHeridos=0;
+        ArrayList<numero> arNumAdiv = new ArrayList<numero>();
+        numero a1 = new numero(numAAdiv.charAt(0),false,false);
+        numero a2 = new numero(numAAdiv.charAt(1),false,false);
+        arNumAdiv.add(a1);
+        arNumAdiv.add(a2);
+        numero acAdiv;
+
+        ArrayList<numero> arNumPos = new ArrayList<numero>();
+        numero b1 = new numero(numPos.charAt(0),false,false);
+        numero b2 = new numero(numPos.charAt(1),false,false);
+        arNumPos.add(b1);
+        arNumPos.add(b2);
+        numero acPos;
 
         if(numIntentos!=0){
-            for(int i=0;i<2;i++) {
-                Character a1 = numAAdiv.charAt(i);
-                for (int t = 0; t < 2; t++) {
-                    Character b1 = numPos.charAt(t);
-                    if (a1.equals(b1) && (i == t)) {
-                        numMuertos++;
-                    } else if (a1.equals(b1)) {
-                        numHeridos++;
+            for(int i=0;i<arNumAdiv.size();i++) {
+                acAdiv=arNumAdiv.get(i);
+                for (int t = 0; t < arNumPos.size(); t++) {
+                    acPos=arNumPos.get(t);
+                    if( acAdiv.muerto==false ) {
+                        if (acAdiv.valor.equals(acPos.valor) && (i == t)) {
+                            numMuertos++;
+                            acAdiv.muerto = true;
+                            acPos.muerto= true;
+                            if(acPos.herido==true){
+                                numHeridos--;
+                            }
+                        } else if (acAdiv.valor.equals(acPos.valor) && (i != t) && (acPos.herido == false)&& (acPos.muerto==false)) {
+                            numHeridos++;
+                            acPos.herido = true;
+                        }
                     }
                 }
             }
@@ -77,6 +100,7 @@ public class Main2Activity extends AppCompatActivity {
         }
         if(numAAdiv.equals(numPos)){
            notif();
+            b3.setEnabled(false);
         }
        t6.append("Nº heridos"+String.valueOf(numHeridos)+"Nº muertos"+String.valueOf(numMuertos)+System.getProperty("line.separator"));
     }
@@ -112,7 +136,7 @@ public class Main2Activity extends AppCompatActivity {
     private void notif() {
         NotificationCompat.Builder elconstructor = new NotificationCompat.Builder(Main2Activity.this);
         elconstructor.setContentText("Enhorabuena!! Has ganado");
-        elconstructor.setContentTitle("hola");
+        elconstructor.setContentTitle("Juego finalizado");
         elconstructor.setSmallIcon(android.R.drawable.stat_sys_warning);
         elnotificationmanager.notify(1, elconstructor.build());
 
